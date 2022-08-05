@@ -3,7 +3,9 @@
 ## Requirements:
 - Install the GAP sdk (>=v4.7.0) from [this link](https://github.com/GreenWaves-Technologies/gap_sdk)
 
-## Tensorflow + TFLite
+## Training - Testing
+
+### Tensorflow + TFLite
 
 Requirements:
 - Tensorflow >=2.7.0
@@ -13,7 +15,7 @@ In the *cifar10_training.ipynb* notebook you can find the training script, the m
 - ```model/cifar10_model_fp32.tflite```: Full precision
 - ```model/cifar10_model_uint8.tflite```: Quantized
 
-## Pytorch + ONNX
+### Pytorch + ONNX
 
 Requirements:
 - Pytorch >= 1.12
@@ -24,7 +26,7 @@ In the *cifar10_training_pytorch.ipynb* notebook you can find the training scrip
 
 - ```model/quant_cifar10.onnx```: Quantized
 
-## Model Testing
+### Model Testing
 
 In each notebook all the models accuracies are tested. In the end the model is opened in NNTool and the accuracy is tested again. Here you can find the results (in parenthesis: SW Backend - Quantization Ranges used - Target (in NNTool different targets might lead to different quantization schemes)):
 
@@ -38,10 +40,26 @@ In each notebook all the models accuracies are tested. In the end the model is o
 - ```model/quant_cifar10.onnx``` (OnnxRuntime - Pytorch PTQ - Floating Point): 77.56%
 - ```model/quant_cifar10.onnx``` (NNTool - Pytorch PTQ - NE16): 77.27%
 - ```model/quant_cifar10.onnx``` (NNTool - Pytorch PTQ - SW): 77.4%
+- ```model/quant_cifar10.onnx``` (NNTool - NNTool PTQ - NE16): 77.53%
+- ```model/quant_cifar10.onnx``` (NNTool - NNTool PTQ - SW): 77.4%
+
+## Run Project
+
+To run the porject:
+
+```
+source gap_sdk/sourceme.sh
+make all run platform=gvsoc \
+    MODEL_NE16=1 (use ne16 or SW, default: 1) \
+    MODEL_HWC=0 (use HWC tensor layout if SW backend, default: 0) \
+    ONNX=0 (use ONNX model, otherwise tflite quantized, default: 0)
+
+```
+
 
 ## Generate nntool project
 
-With the quantized one you can directly generate your project. First source the sdk and open an nntool interactive shell environment:
+With the model from onnx/tflite you can directly generate your project. First source the sdk and open an nntool interactive shell environment:
 
 ```
 source gap_sdk/sourceme.sh
