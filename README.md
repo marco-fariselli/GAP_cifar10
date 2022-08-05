@@ -1,15 +1,43 @@
 # CIFAR10 on GAP
 
-Requirements:
+## Requirements:
 - Install the GAP sdk (>=v4.7.0) from [this link](https://github.com/GreenWaves-Technologies/gap_sdk)
+
+## Tensorflow + TFLite
+
+Requirements:
 - Tensorflow >=2.7.0
 
-## Training
+In the *cifar10_training.ipynb* notebook you can find the training script, the model is inspired by the open source [Kaggle Project](https://www.kaggle.com/ektasharma/simple-cifar10-cnn-keras-code-with-88-accuracy#A-Simple-Keras-CNN-trained-on-CIFAR-10-dataset-with-over-88%-accuracy-(Without-Data-Augmentation)). The model is then converted to tflite w/ and w/o post-training quantization.
 
-In the *cifar10_training.ipynb* notebook you can find the training script, the model is inspired by the open source [Kaggle Project](https://www.kaggle.com/ektasharma/simple-cifar10-cnn-keras-code-with-88-accuracy#A-Simple-Keras-CNN-trained-on-CIFAR-10-dataset-with-over-88%-accuracy-(Without-Data-Augmentation)). I used the google colab with GPU enabled, it can be also run on your local machine. It produced 2 .tflite files:
+- ```model/cifar10_model_fp32.tflite```: Full precision
+- ```model/cifar10_model_uint8.tflite```: Quantized
 
-- ```cifar10_model_fp32.tflite```: Full precision
-- ```cifar10_model_uint8.tflite```: Quantized
+## Pytorch + ONNX
+
+Requirements:
+- Pytorch >= 1.12
+- onnx >= 1.12.0
+- onnxruntime >= 1.11.1
+
+In the *cifar10_training_pytorch.ipynb* notebook you can find the training script, the model architecture is the same as before with few little details to be able to run pytorch Post training quantization (i.e. ReLU6 -> ReLU). The model is trained with pytorch and quantized with [pytorch static post training quantization](https://pytorch.org/docs/stable/quantization.html#). The model is then exported to onnx. 
+
+- ```model/quant_cifar10.onnx```: Quantized
+
+## Model Testing
+
+In each notebook all the models accuracies are tested. In the end the model is opened in NNTool and the accuracy is tested again. Here you can find the results (in parenthesis: SW Backend - Quantization Ranges used - Target (in NNTool different targets might lead to different quantization schemes)):
+
+- ```model/cifar10_model_fp32.tflite``` (TFLite - None - Floating Point): 78.73%
+- ```model/cifar10_model_uint8.tflite``` (TFLite - TFlite PTQ - Fixed Point): 77.73%
+- ```model/cifar10_model_uint8.tflite``` (NNTool - TFlite PTQ - NE16): 78.0%
+- ```model/cifar10_model_uint8.tflite``` (NNTool - TFlite PTQ - SW): 78.4%
+- ```model/cifar10_model_fp32.tflite``` (NNTool - NNTool PTQ - NE16): 78.0%
+- ```model/cifar10_model_fp32.tflite``` (NNTool - NNTool PTQ - SW): 78.3%
+- ```model/quant_cifar10.onnx``` (Pytorch - Pytorch PTQ - Floating Point): 77.59%
+- ```model/quant_cifar10.onnx``` (OnnxRuntime - Pytorch PTQ - Floating Point): 77.56%
+- ```model/quant_cifar10.onnx``` (NNTool - Pytorch PTQ - NE16): 77.27%
+- ```model/quant_cifar10.onnx``` (NNTool - Pytorch PTQ - SW): 77.4%
 
 ## Generate nntool project
 
